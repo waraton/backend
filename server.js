@@ -1,8 +1,8 @@
 require("dotenv").config();
 //access the env file
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { escapeXML } = require("ejs");
-const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const db = require("better-sqlite3")("myDb.db");
@@ -39,9 +39,9 @@ myApp.use(function (req, res, next) {
     req.user = false;
   }
 
+  //send data global and call next
   res.locals.user = req.user;
   console.log(req.user);
-
   next();
 });
 
@@ -52,12 +52,71 @@ myApp.get("/", (req, res) => {
     res.render("home");
   }
 });
-myApp.get('/logout', (req, res)=>{
-  res.clearCookie('myAppCookie')
-  res.redirect('/')
-})
+myApp.get("/logout", (req, res) => {
+  res.clearCookie("myAppCookie");
+  res.redirect("/");
+});
 myApp.get("/login", (req, res) => {
   res.render("login");
+});
+myApp.post("/login", (req, res) => {
+  let errors = [];
+  // ensure inputs are strings
+  if (typeof req.body.username !== "string") req.body.username = "";
+  if (typeof req.body.password !== "string") req.body.password = "";
+  // username validation
+  //- password and username not empty
+  if ( req.body.username.trim() == "" ||  req.body.password == ""){
+    errors = ["Invalid username/password!"];
+  }
+    
+  // errors length check
+  if (errors.length) {
+    return res.render("login", { errors });
+  }
+  // lookUp user in the db
+  const UserRequiringAccess = db.prepare(
+    "SELECT * FROM users WHERE USERNAME = ?"
+  );
+  const userInQuestion = UserRequiringAccess.get(req.body.username);
+
+  if (!userInQuestion) {
+    errors = ["Invalid username/password!!!"];
+    return res.render("login", { errors });
+  }
+  // decrypt password and compare
+  const matchOrNot = bcrypt.compareSync(
+    req.body.password,
+    userInQuestion.password
+  );
+  // match password
+  if (!matchOrNot) {
+    errors = ["Invalid username/password!!!"];
+    return res.render("login", { errors });
+  }else{
+      // if true match and give cookie
+  const secretValueToken = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) * 60 * 60,
+      school: "lire",
+      likes: "css",
+      program: "JavaScript, Phyton",
+      userid: userInQuestion.id,
+      name: userInQuestion.username,
+    },
+    process.env.JWTSECRET
+  );
+  res.cookie("myAppCookie", secretValueToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+    maxAge: 1000 * 3600,
+    /* a 1 day lifespan cookie accessible from server sent over https */
+  });
+  res.redirect("/");
+  }
+
+
 });
 myApp.post("/register", (req, res) => {
   const errors = [];
@@ -119,12 +178,13 @@ myApp.post("/register", (req, res) => {
     maxAge: 1000 * 3600,
     /* a 1 day lifespan cookie accessible from server sent over https */
   });
-  res.send("Thaaaaaanks....");
+  res.redirect("/");
 });
 
 /*
  * validation: 36 min
  * cookies: 51 min
+ * com9onents in one 9lace
  */
 
 myApp.listen(3000);
