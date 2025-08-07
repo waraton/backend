@@ -2,35 +2,18 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="description">
-  <meta name="keywords" content="keywords">
-  <link rel="styleSheet" href="/style.css">
+  <%- include('components/head') %>
   <title>Home</title>
 </head>
 
 <body>
-  <header>
-    <h2><a href="/">Our wonderful app</a></h2>
-    <nav>
-      <% if (user) { %>
-        <a href="/create-post">Create Post</a>
-        <a href="/logout">Log Out</a>
-      <% } else { %>
-          <a href="/login">Log In</a>
-      <% } %>
-      <a href="https://GitHub.com/waraton">waraton@GitHub</a>
-    </nav>
-  </header>
+  <%- include('components/header') %
   <main>
     <h3>WElcome to your Dash_____Board!!</h3>
     <p>The heart of the wise makes his speech judicious and adds persuasiveness to his lips. - Proverbs 16:23</p>
     <blockquote>I love the Lord, for he heard my voice; he heard my cry for mercy. Because he turned his ear to me, I will call on him as long as I live. - Psalm 116:1-2</blockquote>
   </main>
-  <footer>
-    <small>WNMK &copy; 2025. All rights reserved</small>
-  </footer>
+  <%- include('components/footer') %>
 </body>
 
 </html>
