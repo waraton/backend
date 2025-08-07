@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('components/head') %>
+  <title>Home</title>
+</head>
+
+<body>
+  <%- include('components/header') %>
+  <main>
+    <h3>Create a post</h3>
+    <p>Create your posts in a few simple steps</p>
+    <form action="/create" method="POST">
+
+      <% errors.forEach(err=>{%>
+        <p class="notice">
+          <%= err %>
+        </p>
+        <% }) %>
+
+          <fieldset>
+            <legend>Create a new post</legend>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title">
+
+            <label for="body">Content</label>
+            <textarea name="body" id="body"></textarea><br>
+            <button>Create Post</button>
+          </fieldset>
+    </form>
+    <p>“I am the Alpha and the Omega,” says the Lord God, “who is, and who was, and who is to come, the Almighty.” - Revelation 1:8</p>
+  </main>
+  <%- include('components/footer') %>
+</body>
+
+</html>
+<!-- just before login functionality: 17 min -->

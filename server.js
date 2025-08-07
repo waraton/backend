@@ -44,6 +44,13 @@ myApp.use(function (req, res, next) {
   console.log(req.user);
   next();
 });
+// check if logged in middle ware
+function mustBeLoggedIn(req, res, next) {
+  if (req.user) {
+    return next();
+  }
+  return res.redirect("/");
+}
 
 myApp.get("/", (req, res) => {
   if (req.user) {
@@ -52,6 +59,7 @@ myApp.get("/", (req, res) => {
     res.render("home");
   }
 });
+//logout of your account
 myApp.get("/logout", (req, res) => {
   res.clearCookie("myAppCookie");
   res.redirect("/");
@@ -59,6 +67,21 @@ myApp.get("/logout", (req, res) => {
 myApp.get("/login", (req, res) => {
   res.render("login");
 });
+//create posts
+myApp.get("/create-post", mustBeLoggedIn, (req, res) => {
+  res.render("create-post");
+});
+//shared validation
+function sharedValidation(req) {
+  const errors = []
+
+  if(typeof req.body.title !== 'string') req.body.title = ''
+  if(typeof req.body.body !== 'string') req.body.body = ''
+}
+myApp.post("/create", mustBeLoggedIn, (req, res) => {
+  const errors = sharedValidation()
+});
+// login to your account
 myApp.post("/login", (req, res) => {
   let errors = [];
   // ensure inputs are strings
@@ -66,10 +89,10 @@ myApp.post("/login", (req, res) => {
   if (typeof req.body.password !== "string") req.body.password = "";
   // username validation
   //- password and username not empty
-  if ( req.body.username.trim() == "" ||  req.body.password == ""){
+  if (req.body.username.trim() == "" || req.body.password == "") {
     errors = ["Invalid username/password!"];
   }
-    
+
   // errors length check
   if (errors.length) {
     return res.render("login", { errors });
@@ -93,29 +116,30 @@ myApp.post("/login", (req, res) => {
   if (!matchOrNot) {
     errors = ["Invalid username/password!!!"];
     return res.render("login", { errors });
-  }else{
-      // if true match and give cookie
-  const secretValueToken = jwt.sign(
-    {
-      exp: Math.floor(Date.now() / 1000) * 60 * 60,
-      school: "lire",
-      likes: "css",
-      program: "JavaScript, Phyton",
-      userid: userInQuestion.id,
-      name: userInQuestion.username,
-    },
-    process.env.JWTSECRET
-  );
-  res.cookie("myAppCookie", secretValueToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 1000 * 3600,
-    /* a 1 day lifespan cookie accessible from server sent over https */
-  });
-  res.redirect("/");
+  } else {
+    // if true match and give cookie
+    const secretValueToken = jwt.sign(
+      {
+        exp: Math.floor(Date.now() / 1000) * 60 * 60,
+        school: "lire",
+        likes: "css",
+        program: "JavaScript, Phyton",
+        userid: userInQuestion.id,
+        name: userInQuestion.username,
+      },
+      process.env.JWTSECRET
+    );
+    res.cookie("myAppCookie", secretValueToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 1000 * 3600,
+      /* a 1 day lifespan cookie accessible from server sent over https */
+    });
+    res.redirect("/");
   }
 });
+// create an account
 myApp.post("/register", (req, res) => {
   const errors = [];
   // ensure inputs are not empty
@@ -132,11 +156,11 @@ myApp.post("/register", (req, res) => {
     errors.push(
       "You must provide a username with only alphanumeric characters and no special signs"
     );
-// check usage of username in the db
-const checkStatement = db.prepare("SELECT * FROM users WHERE USERNAME = ? ")
-const usernameCheck = checkStatement.get(req.body.username)
-if(usernameCheck) errors.push('Username is already taken!!')
-  
+  // check usage of username in the db
+  const checkStatement = db.prepare("SELECT * FROM users WHERE USERNAME = ? ");
+  const usernameCheck = checkStatement.get(req.body.username);
+  if (usernameCheck) errors.push("Username is already taken!!");
+
   // password validation
   if (!req.body.password) errors.push("You must provide a password.");
   if (req.body.password && req.body.password.length < 6)
