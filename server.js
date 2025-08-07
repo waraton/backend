@@ -115,8 +115,6 @@ myApp.post("/login", (req, res) => {
   });
   res.redirect("/");
   }
-
-
 });
 myApp.post("/register", (req, res) => {
   const errors = [];
@@ -134,6 +132,11 @@ myApp.post("/register", (req, res) => {
     errors.push(
       "You must provide a username with only alphanumeric characters and no special signs"
     );
+// check usage of username in the db
+const checkStatement = db.prepare("SELECT * FROM users WHERE USERNAME = ? ")
+const usernameCheck = checkStatement.get(req.body.username)
+if(usernameCheck) errors.push('Username is already taken!!')
+  
   // password validation
   if (!req.body.password) errors.push("You must provide a password.");
   if (req.body.password && req.body.password.length < 6)
