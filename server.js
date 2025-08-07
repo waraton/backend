@@ -1,9 +1,9 @@
-require("dotenv").config()
+require("dotenv").config();
 //access the env file
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 const { escapeXML } = require("ejs");
-const bcrypt = require("bcrypt")
-const cookieParser = require('cookie-parser')
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 const express = require("express");
 const db = require("better-sqlite3")("myDb.db");
 db.pragma("journal_mode = WAL");
@@ -20,28 +20,28 @@ const createTables = db.transaction(() => {
   `
   ).run();
 });
-createTables()
+createTables();
 
 const myApp = express();
 
 myApp.set("view engine", "ejs");
 myApp.use(express.urlencoded({ extended: false }));
 myApp.use(express.static("public"));
-myApp.use(cookieParser())
+myApp.use(cookieParser()); //parse the cookies
 myApp.use(function (req, res, next) {
   res.locals.errors = [];
 
   // decode cookie?
-try {
-  const decoded = jwt.verify(req.cookies.myAppCookie, process.env.JWTSECRET)
-  req.user =  decoded
-} catch (error) {
-  req.user = false
-}
+  try {
+    const decoded = jwt.verify(req.cookies.myAppCookie, process.env.JWTSECRET);
+    req.user = decoded;
+  } catch (err) {
+    req.user = false;
+  }
 
-res.locals.user = res.user
-console.log(req.user);
-  
+  res.locals.user = req.user;
+  console.log(req.user);
+
   next();
 });
 
@@ -79,33 +79,38 @@ myApp.post("/register", (req, res) => {
   }
   // save sign up info to database
   /* ! encrypt password */
-  const salt = bcrypt.genSaltSync(10)
-  req.body.password = bcrypt.hashSync(req.body.password, salt)
+  const salt = bcrypt.genSaltSync(10);
+  req.body.password = bcrypt.hashSync(req.body.password, salt);
 
-  const ourStatement = db.prepare("INSERT INTO users (username,password) VALUES (?,?)")
-  const result = ourStatement.run(req.body.username,req.body.password)
-// look up user
-  const lookUpStatement = db.prepare("SELECT * FROM users WHERE ROWID = ?")
-  const theUser = lookUpStatement.get(result.lastInsertRowid)
+  const ourStatement = db.prepare(
+    "INSERT INTO users (username,password) VALUES (?,?)"
+  );
+  const result = ourStatement.run(req.body.username, req.body.password);
+  // look up user
+  const lookUpStatement = db.prepare("SELECT * FROM users WHERE ROWID = ?");
+  const theUser = lookUpStatement.get(result.lastInsertRowid);
 
   // log user in by giving them a cookie
 
   // generate a long cookie value using jwt
-  const secretValueToken = jwt.sign({
-    exp:Math.floor(Date.now()/1000)*60*60,
-    school:'lire',
-    likes:'css',
-    program: 'JavaScript, Phyton',
-    userid: theUser.id,
-    name: theUser.username
-  }, process.env.JWTSECRET)
-  res.cookie("myAppCookie", secretValueToken,{
+  const secretValueToken = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) * 60 * 60,
+      school: "lire",
+      likes: "css",
+      program: "JavaScript, Phyton",
+      userid: theUser.id,
+      name: theUser.username,
+    },
+    process.env.JWTSECRET
+  );
+  res.cookie("myAppCookie", secretValueToken, {
     httpOnly: true,
     secure: false,
-    sameSite: 'strict',
-    maxAge: 1000 * 3600
+    sameSite: "strict",
+    maxAge: 1000 * 3600,
     /* a 1 day lifespan cookie accessible from server sent over https */
-  })
+  });
   res.send("Thaaaaaanks....");
 });
 
