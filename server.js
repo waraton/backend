@@ -52,6 +52,10 @@ myApp.get("/", (req, res) => {
     res.render("home");
   }
 });
+myApp.get('/logout', (req, res)=>{
+  res.clearCookie('myAppCookie')
+  res.redirect('/')
+})
 myApp.get("/login", (req, res) => {
   res.render("login");
 });
