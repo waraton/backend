@@ -1,4 +1,5 @@
 const { escapeXML } = require("ejs");
+const bcrypt = require("bcrypt")
 const express = require("express");
 const db = require("better-sqlite3")("myDb.db");
 db.pragma("journal_mode = WAL");
@@ -60,9 +61,20 @@ myApp.post("/register", (req, res) => {
     return res.render("home", { errors });
   }
   // save sign up info to database
+  /* ! encrypt password */
+  const salt = bcrypt.genSaltSync(10)
+  req.body.password = bcrypt.hashSync(req.body.password, salt)
+
   const ourStatement = db.prepare("INSERT INTO users (username,password) VALUES (?,?)")
   ourStatement.run(req.body.username,req.body.password)
   // log user in by giving them a cookie
+  res.cookie("myAppCookie","secretValue",{
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 1000 * 3600 * 24
+    /* a 1 day lifespan cookie accessible from server sent over httsp*/
+  })
   res.send("Thaaaaaanks....");
 });
 
