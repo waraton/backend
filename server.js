@@ -46,7 +46,11 @@ myApp.use(function (req, res, next) {
 });
 
 myApp.get("/", (req, res) => {
-  res.render("home");
+  if (req.user) {
+    return res.render("dashboard");
+  } else {
+    res.render("home");
+  }
 });
 myApp.get("/login", (req, res) => {
   res.render("login");
