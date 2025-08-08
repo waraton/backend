@@ -3,31 +3,37 @@
 
 <head>
   <%- include('components/head') %>
-  <title>View Post</title>
+    <title>View Post</title>
 </head>
 
 <body>
   <%- include('components/header') %>
-  <main>
-    <article>
-      <hgroup>
-        <h3><%= post.title %></h3>
-        <p><small>Posted by <%= post.username %> on <%= post.createDate %></small></p>
-      </hgroup>
-      <div>
-        <%= post.body %>
-      </div>
-    </article>
-    <a href="/edit-post/<%= post.id %>" class="button">Edit Post</a>
-    <form action="/delete-post/<%= post.id %>" method="post" style="display: inline;">
-      <input type="submit" value="Delete">
-    </form>
+    <main>
+      <article>
+        <hgroup>
+          <h3>
+            <%= post.title %>
+          </h3>
+          <p><small>Posted by <%= post.username %> on <%= post.createDate %></small></p>
+        </hgroup>
+        <div>
+          <%= post.body %>
+        </div>
+      </article>
+      
+      <% if (isAuthor) { %>
+        <a href="/edit-post/<%= post.id %>" class="button">Edit Post</a>
+        <form action="/delete-post/<%= post.id %>" method="post" style="display: inline;">
+          <input type="submit" value="Delete">
+        </form>
+      <% } %>
 
-    <blockquote>I love the Lord, for he heard my voice; he heard my cry for mercy. Because he turned his ear to me, I will call on him as long as I live. - Psalm 116:1-2</blockquote>
-  </main>
-  <%- include('components/footer') %>
+      <blockquote>I love the Lord, for he heard my voice; he heard my cry for mercy. Because he turned his ear tome, I will call on him as long as I live. - Psalm 116:1-2</blockquote>
+    </main>
+    <%- include('components/footer') %>
 </body>
 
 <!-- just before edit and delete functionality: 02:03 -->
+
 </html>
 <!-- just before login functionality: 17 min -->

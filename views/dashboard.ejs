@@ -9,7 +9,15 @@
 <body>
   <%- include('components/header') %>
   <main>
-    <h3>Hello username, WElcome to your Dash_____Board!!</h3>
+    <hgroup>
+      <h3>Hello <%= user.name %>, WElcome to your Dash_____Board!!</h3>
+      <% if (posts.length) { %>
+       <p>Here are your posts</p>
+      <% } else { %>
+       <p>You do not have any posts. You can <a href="/create-post">create a new one here</a></p>
+       <% } %>
+    </hgroup>
+
     <ul>
       <% posts.forEach(element => {%>
         <li>
@@ -17,7 +25,7 @@
         </li>
       <% }); %>
     </ul>
-    <p>The heart of the wise makes his speech judicious and adds persuasiveness to his lips. - Proverbs 16:23</p>
+
     <blockquote>I love the Lord, for he heard my voice; he heard my cry for mercy. Because he turned his ear to me, I will call on him as long as I live. - Psalm 116:1-2</blockquote>
   </main>
   <%- include('components/footer') %>

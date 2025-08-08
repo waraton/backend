@@ -143,7 +143,7 @@ myApp.post("/create-post", mustBeLoggedIn, (req, res) => {
   res.redirect(`/post/${realPost.id}`);
 });
 
-myApp.get("/post/:id", mustBeLoggedIn, (req, res) => {
+myApp.get("/post/:id", (req, res) => {
   const ourStatement = db.prepare(
     "SELECT myPosts.*,users.username FROM myPosts INNER JOIN users ON myPosts.authorId =users.id WHERE myPosts.id = ?"
   );
@@ -152,7 +152,10 @@ myApp.get("/post/:id", mustBeLoggedIn, (req, res) => {
   if (!post) {
     return res.redirect("/");
   }
-  res.render("single-post", { post });
+
+  const isAuthor = post.authorId === req.user.userid;
+
+  res.render("single-post", { post, isAuthor });
 });
 
 // edit posts
@@ -204,10 +207,8 @@ myApp.get("/edit-post/:id", mustBeLoggedIn, (req, res) => {
     return res.redirect("/");
   }
 
-  const isAuthor = post.authorId === req.user.userid
-
   // other wise send to edit page
-  res.render("edit-post", { post, isAuthor });
+  res.render("edit-post", { post });
 });
 
 // login to your account
