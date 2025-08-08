@@ -1,0 +1,5 @@
+.env
+node_modules/
+myDb.db
+myDb.db-shm
+myDb.db-wal

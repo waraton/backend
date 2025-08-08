@@ -13,7 +13,8 @@
     <p>Here you can create, edit, and delete posts. These functionalities are simple to use and require little to no fore-knowledge requirement.</p>
     <p>Are you familiar with Markdown? Make your posts elegant by including markdown in to your posts.</p>
     <p>weSING you Happy Posting!!</p>
-    <p>Create your account in a few simple steps</p>
+    <h4>Create an account</h4>
+    <p>Create your account in a few simple steps to get started</p>
     <form action="/register" method="POST">
 
       <% errors.forEach(err=>{%>
@@ -30,6 +31,7 @@
             <label for="password">password</label>
             <input type="password" name="password" id="password" autocomplete="off"><br>
             <button>Sign Up</button>
+            <p>Already having an account? Simply <a href="/login" class="button">Lo In</a></p>
           </fieldset>
     </form>
 
