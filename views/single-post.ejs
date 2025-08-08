@@ -12,7 +12,7 @@
     <article>
       <hgroup>
         <h3><%= post.title %></h3>
-        <small>Posted by <%= post.username %> on <%= post.createDate %></small>
+        <p><small>Posted by <%= post.username %> on <%= post.createDate %></small></p>
       </hgroup>
       <div>
         <%= post.body %>
@@ -28,5 +28,6 @@
   <%- include('components/footer') %>
 </body>
 
+<!-- just before edit and delete functionality: 02:03 -->
 </html>
 <!-- just before login functionality: 17 min -->

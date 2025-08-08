@@ -34,6 +34,8 @@ const createTables = db.transaction(() => {
     )
   `
   ).run();
+  // ! if you are in auto same mode do not call the run method until you have entered the
+  // ! sql statement because otherwise you may end up creating multiple tables
 });
 createTables();
 
@@ -43,6 +45,7 @@ myApp.set("view engine", "ejs");
 myApp.use(express.urlencoded({ extended: false }));
 myApp.use(express.static("public"));
 myApp.use(cookieParser()); //parse the cookies
+
 myApp.use(function (req, res, next) {
   res.locals.errors = [];
 
@@ -62,9 +65,9 @@ myApp.use(function (req, res, next) {
 
 myApp.get("/", (req, res) => {
   if (req.user) {
-    const ourStatement = db.prepare('SELECT * FROM myPosts WHERE authorId = ?')
-    const posts = ourStatement.all(req.user.userid)
-    return res.render("dashboard", {posts});
+    const ourStatement = db.prepare("SELECT * FROM myPosts WHERE authorId = ?");
+    const posts = ourStatement.all(req.user.userid);
+    return res.render("dashboard", { posts });
   } else {
     res.render("home");
   }
@@ -139,7 +142,8 @@ myApp.post("/create-post", mustBeLoggedIn, (req, res) => {
 
   res.redirect(`/post/${realPost.id}`);
 });
-myApp.get("/post/:id", (req, res) => {
+
+myApp.get("/post/:id", mustBeLoggedIn, (req, res) => {
   const ourStatement = db.prepare(
     "SELECT myPosts.*,users.username FROM myPosts INNER JOIN users ON myPosts.authorId =users.id WHERE myPosts.id = ?"
   );
@@ -149,6 +153,61 @@ myApp.get("/post/:id", (req, res) => {
     return res.redirect("/");
   }
   res.render("single-post", { post });
+});
+
+// edit posts
+myApp.post("/edit-post/:id", mustBeLoggedIn, (req, res) => {
+  // look up post
+  const yourStatement = db.prepare("SELECT * FROM myPosts WHERE id = ?");
+  const post = yourStatement.get(req.params.id);
+  // if not author take to home or post non existant or both
+  if (post.authorId !== req.user.userid || !post) {
+    return res.redirect("/");
+  }
+
+  // other wise send to edit page
+  const errors = sharedValidation(req);
+
+  if (errors.length) {
+    return res.render("edit-post", { errors });
+  }
+
+  const updateStatement = db
+    .prepare("UPDATE myPosts SET title = ?, body = ? WHERE id = ?")
+    .run(req.body.title, req.body.body, req.params.id);
+
+  res.redirect(`/post/${req.params.id}`);
+});
+// delete posts
+myApp.post("/delete-post/:id", mustBeLoggedIn, (req, res) => {
+  // look up post
+  const yourStatement = db.prepare("SELECT * FROM myPosts WHERE id = ?");
+  const post = yourStatement.get(req.params.id);
+  // if not author take to home or post non existant or both
+  if (post.authorId !== req.user.userid || !post) {
+    return res.redirect("/");
+  }
+
+  const updateStatement = db
+    .prepare("DELETE FROM myPosts WHERE id = ?")
+    .run(req.params.id);
+
+  res.redirect(`/`);
+});
+// edit a posts
+myApp.get("/edit-post/:id", mustBeLoggedIn, (req, res) => {
+  // look up post
+  const yourStatement = db.prepare("SELECT * FROM myPosts WHERE id = ?");
+  const post = yourStatement.get(req.params.id);
+  // if not author take to home or post non existant or both
+  if (post.authorId !== req.user.userid || !post) {
+    return res.redirect("/");
+  }
+
+  const isAuthor = post.authorId === req.user.userid
+
+  // other wise send to edit page
+  res.render("edit-post", { post, isAuthor });
 });
 
 // login to your account
@@ -191,8 +250,7 @@ myApp.post("/login", (req, res) => {
     const secretValueToken = jwt.sign(
       {
         exp: Math.floor(Date.now() / 1000) * 60 * 60,
-        school: "lire",
-        likes: "css",
+        date: new Date().toDateString(),
         program: "JavaScript, Phyton",
         userid: userInQuestion.id,
         name: userInQuestion.username,
@@ -260,9 +318,8 @@ myApp.post("/register", (req, res) => {
   const secretValueToken = jwt.sign(
     {
       exp: Math.floor(Date.now() / 1000) * 60 * 60,
-      school: "lire",
-      likes: "css",
-      program: "JavaScript, Phyton",
+      date: new Date().toDateString(),
+      program: "JavaScript, Node.js",
       userid: theUser.id,
       name: theUser.username,
     },

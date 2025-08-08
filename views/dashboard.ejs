@@ -13,7 +13,7 @@
     <ul>
       <% posts.forEach(element => {%>
         <li>
-          <a href="/posts/<%= element.id %>"><%= element.title %></a> on <%= element.createDate %>
+          <a href="/post/<%= element.id %>"><%= element.title %></a> on <%= element.createDate %>
         </li>
       <% }); %>
     </ul>
