@@ -1,7 +1,8 @@
 require("dotenv").config();
+//access the env file
 //html sanitizer
 const sanitizeHTML = require("sanitize-html");
-//access the env file
+const marked = require("marked");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { escapeXML } = require("ejs");
@@ -47,6 +48,13 @@ myApp.use(express.static("public"));
 myApp.use(cookieParser()); //parse the cookies
 
 myApp.use(function (req, res, next) {
+  //Add markdown functionality
+  res.locals.filterUserHtml = function (content) {
+    return sanitizeHTML(marked.parse(content), {
+      allowedTags: ["p", "li", "table", "em", "strong", "pre", "code"],
+      allowedAttributes: {},
+    });
+  };
   res.locals.errors = [];
 
   // decode cookie?
@@ -65,7 +73,9 @@ myApp.use(function (req, res, next) {
 
 myApp.get("/", (req, res) => {
   if (req.user) {
-    const ourStatement = db.prepare("SELECT * FROM myPosts WHERE authorId = ?");
+    const ourStatement = db.prepare(
+      "SELECT * FROM myPosts WHERE authorId = ? ORDER BY title ASC"
+    );
     const posts = ourStatement.all(req.user.userid);
     return res.render("dashboard", { posts });
   } else {
@@ -131,7 +141,7 @@ myApp.post("/create-post", mustBeLoggedIn, (req, res) => {
     "INSERT INTO myPosts (createDate,title,body,authorId) VALUES (?,?,?,?)"
   );
   const result = ourStatement.run(
-    new Date().toISOString(),
+    new Date().toLocaleDateString(),
     req.body.title,
     req.body.body,
     req.user.userid
@@ -250,9 +260,8 @@ myApp.post("/login", (req, res) => {
     // if true match and give cookie
     const secretValueToken = jwt.sign(
       {
-        exp: Math.floor(Date.now() / 1000) * 60 * 60,
+        exp: Math.floor(Date.now() / 1000) * 60 * 60 * 24,
         date: new Date().toDateString(),
-        program: "JavaScript, Phyton",
         userid: userInQuestion.id,
         name: userInQuestion.username,
       },
@@ -260,7 +269,7 @@ myApp.post("/login", (req, res) => {
     );
     res.cookie("myAppCookie", secretValueToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "strict",
       maxAge: 1000 * 3600,
       /* a 1 day lifespan cookie accessible from server sent over https */
@@ -318,9 +327,8 @@ myApp.post("/register", (req, res) => {
   // generate a long cookie value using jwt
   const secretValueToken = jwt.sign(
     {
-      exp: Math.floor(Date.now() / 1000) * 60 * 60,
+      exp: Math.floor(Date.now() / 1000) * 60 * 60 * 1000,
       date: new Date().toDateString(),
-      program: "JavaScript, Node.js",
       userid: theUser.id,
       name: theUser.username,
     },
@@ -328,9 +336,9 @@ myApp.post("/register", (req, res) => {
   );
   res.cookie("myAppCookie", secretValueToken, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "strict",
-    maxAge: 1000 * 3600,
+    maxAge: 1000 * 3600000,
     /* a 1 day lifespan cookie accessible from server sent over https */
   });
   res.redirect("/");
