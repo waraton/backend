@@ -269,7 +269,7 @@ myApp.post("/login", (req, res) => {
     );
     res.cookie("myAppCookie", secretValueToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "strict",
       maxAge: 1000 * 3600,
       /* a 1 day lifespan cookie accessible from server sent over https */
@@ -336,7 +336,7 @@ myApp.post("/register", (req, res) => {
   );
   res.cookie("myAppCookie", secretValueToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "strict",
     maxAge: 1000 * 3600000,
     /* a 1 day lifespan cookie accessible from server sent over https */
