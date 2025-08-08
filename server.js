@@ -1,4 +1,6 @@
 require("dotenv").config();
+//html sanitizer
+const sanitizeHTML = require("sanitize-html");
 //access the env file
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -16,6 +18,19 @@ const createTables = db.transaction(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username STRING NOT NULL UNIQUE,
       password STRING NOT NULL UNIQUE
+    )
+  `
+  ).run();
+
+  db.prepare(
+    `
+    CREATE TABLE IF NOT EXISTS myPosts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      createDate TEXT,
+      title STRING NOT NULL,
+      body TEXT NOT NULL,
+      authorId INTEGER,
+      FOREIGN KEY (authorId) REFERENCES users (id)
     )
   `
   ).run();
@@ -44,13 +59,6 @@ myApp.use(function (req, res, next) {
   console.log(req.user);
   next();
 });
-// check if logged in middle ware
-function mustBeLoggedIn(req, res, next) {
-  if (req.user) {
-    return next();
-  }
-  return res.redirect("/");
-}
 
 myApp.get("/", (req, res) => {
   if (req.user) {
@@ -59,27 +67,75 @@ myApp.get("/", (req, res) => {
     res.render("home");
   }
 });
+
 //logout of your account
 myApp.get("/logout", (req, res) => {
   res.clearCookie("myAppCookie");
   res.redirect("/");
 });
+
 myApp.get("/login", (req, res) => {
   res.render("login");
 });
+
+// check if logged in middle ware
+function mustBeLoggedIn(req, res, next) {
+  if (req.user) {
+    return next();
+  }
+  return res.redirect("/");
+}
+
+//shared validation
+function sharedValidation(req) {
+  const errors = [];
+
+  if (typeof req.body.title !== "string") req.body.title = "";
+  if (typeof req.body.body !== "string") req.body.body = "";
+
+  // trim  and or sanitize html
+  req.body.title = sanitizeHTML(req.body.title.trim(), {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+  req.body.body = sanitizeHTML(req.body.body.trim(), {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+
+  if (!req.body.title || !req.body.body) errors.push("You must provide a title / body text");
+
+  return errors;
+}
+
 //create posts
 myApp.get("/create-post", mustBeLoggedIn, (req, res) => {
   res.render("create-post");
 });
-//shared validation
-function sharedValidation(req) {
-  const errors = []
 
-  if(typeof req.body.title !== 'string') req.body.title = ''
-  if(typeof req.body.body !== 'string') req.body.body = ''
-}
-myApp.post("/create", mustBeLoggedIn, (req, res) => {
-  const errors = sharedValidation()
+myApp.post("/create-post", mustBeLoggedIn, (req, res) => {
+  const errors = sharedValidation(req);
+
+  if (errors.length) {
+    return res.render("create-post", { errors });
+  }
+
+  //save into database
+  const ourStatement = db.prepare(
+    "INSERT INTO myPosts (createDate,title,body,authorId) VALUES (?,?,?,?)"
+  );
+  const result = ourStatement.run(
+    new Date().toISOString(),
+    req.body.title,
+    req.body.body,
+    req.user.userid
+  );
+
+  const getPostStatement = db.prepare('SELECT * FROM myPosts WHERE ROWID = ?')
+  const realPost = getPostStatement.get(result.lastInsertRowid)
+  console.log(realPost,778899)
+
+  res.redirect(`/post/${realPost.id}`)
 });
 // login to your account
 myApp.post("/login", (req, res) => {
