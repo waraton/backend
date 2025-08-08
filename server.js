@@ -62,7 +62,9 @@ myApp.use(function (req, res, next) {
 
 myApp.get("/", (req, res) => {
   if (req.user) {
-    return res.render("dashboard");
+    const ourStatement = db.prepare('SELECT * FROM myPosts WHERE authorId = ?')
+    const posts = ourStatement.all(req.user.userid)
+    return res.render("dashboard", {posts});
   } else {
     res.render("home");
   }
@@ -103,7 +105,8 @@ function sharedValidation(req) {
     allowedAttributes: {},
   });
 
-  if (!req.body.title || !req.body.body) errors.push("You must provide a title / body text");
+  if (!req.body.title || !req.body.body)
+    errors.push("You must provide a title / body text");
 
   return errors;
 }
@@ -130,13 +133,24 @@ myApp.post("/create-post", mustBeLoggedIn, (req, res) => {
     req.body.body,
     req.user.userid
   );
+  // redirects to new route
+  const getPostStatement = db.prepare("SELECT * FROM myPosts WHERE ROWID = ?");
+  const realPost = getPostStatement.get(result.lastInsertRowid);
 
-  const getPostStatement = db.prepare('SELECT * FROM myPosts WHERE ROWID = ?')
-  const realPost = getPostStatement.get(result.lastInsertRowid)
-  console.log(realPost,778899)
-
-  res.redirect(`/post/${realPost.id}`)
+  res.redirect(`/post/${realPost.id}`);
 });
+myApp.get("/post/:id", (req, res) => {
+  const ourStatement = db.prepare(
+    "SELECT myPosts.*,users.username FROM myPosts INNER JOIN users ON myPosts.authorId =users.id WHERE myPosts.id = ?"
+  );
+  const post = ourStatement.get(req.params.id);
+
+  if (!post) {
+    return res.redirect("/");
+  }
+  res.render("single-post", { post });
+});
+
 // login to your account
 myApp.post("/login", (req, res) => {
   let errors = [];

@@ -3,13 +3,20 @@
 
 <head>
   <%- include('components/head') %>
-  <title>Home</title>
+  <title>Dash_____Board</title>
 </head>
 
 <body>
   <%- include('components/header') %>
   <main>
-    <h3>WElcome to your Dash_____Board!!</h3>
+    <h3>Hello username, WElcome to your Dash_____Board!!</h3>
+    <ul>
+      <% posts.forEach(element => {%>
+        <li>
+          <a href="/posts/<%= element.id %>"><%= element.title %></a> on <%= element.createDate %>
+        </li>
+      <% }); %>
+    </ul>
     <p>The heart of the wise makes his speech judicious and adds persuasiveness to his lips. - Proverbs 16:23</p>
     <blockquote>I love the Lord, for he heard my voice; he heard my cry for mercy. Because he turned his ear to me, I will call on him as long as I live. - Psalm 116:1-2</blockquote>
   </main>
