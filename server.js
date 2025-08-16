@@ -51,7 +51,7 @@ myApp.use(function (req, res, next) {
   //Add markdown functionality
   res.locals.filterUserHtml = function (content) {
     return sanitizeHTML(marked.parse(content), {
-      allowedTags: ["p", "li", "table", "em", "strong", "pre", "code"],
+      allowedTags: ["p", "li", "table", "em", "strong", "pre", "code","h2","h3","h4","h5","h6",'blockquote'],
       allowedAttributes: {},
     });
   };
