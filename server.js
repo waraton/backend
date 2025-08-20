@@ -51,7 +51,7 @@ myApp.use(function (req, res, next) {
   //Add markdown functionality
   res.locals.filterUserHtml = function (content) {
     return sanitizeHTML(marked.parse(content), {
-      allowedTags: ["p", "li", "table", "em", "strong", "pre", "code","h2","h3","h4","h5","h6",'blockquote'],
+      allowedTags: ["p", "li", "table", "em", "strong", "pre", "code","h2","h3","h4","h5","h6",'blockquote','table','tr','td','th','tbody','br','ol','ul'],
       allowedAttributes: {},
     });
   };
@@ -82,7 +82,13 @@ myApp.get("/", (req, res) => {
     res.render("home");
   }
 });
-
+myApp.get('/allposts', (req, res)=>{
+  const ourStatement = db.prepare(
+    "SELECT * FROM myPosts ORDER BY title ASC"
+  );
+  const posts = ourStatement.all();
+  return res.render("allposts", { posts });
+})
 //logout of your account
 myApp.get("/logout", (req, res) => {
   res.clearCookie("myAppCookie");
