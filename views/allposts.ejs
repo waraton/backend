@@ -30,13 +30,17 @@
      </li>
    <% }); %>
  </ol>
-<% } %>
-<h2>Access Denied</h2>
-<p>You are not <b>Logged In</b>.  To be able to view all the posts, you must be Logged In. To ensure the security and the confidentiality of our user's information, care is taken to make sure you are a valid user with a user account to view posts.</p>
-    <blockquote>But, “Let the one who boasts boast in the Lord.” For it is not the one who commends himself who is approved, but the one whom the Lord commends. - 2 Corinthians 10:17-18</blockquote>
-  </main>
+ <% } %>
+ 
+ <% if (!user) { %>
+  <h2>Access Denied</h2>
+  <p>You are not <b>Logged In</b>.  To be able to view all the posts, you must be Logged In. To ensure the security and the confidentiality of our user's information, care is taken to make sure you are a valid user with a user account to view posts. <a href="login">Login to your account</a></p>
+  
+
+  <blockquote>But, “Let the one who boasts boast in the Lord.” For it is not the one who commends himself who is approved, but the one whom the Lord commends. - 2 Corinthians 10:17-18</blockquote>
+  <% } %>
+</main>
   <%- include('components/footer') %>
 </body>
 
 </html>
-<!-- just before login functionality: 17 min -->

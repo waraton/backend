@@ -277,7 +277,7 @@ myApp.post("/login", (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 1000 * 3600,
+      maxAge: 1000 * 3600 * 45 * 1000,
       /* a 1 day lifespan cookie accessible from server sent over https */
     });
     res.redirect("/");
@@ -333,7 +333,7 @@ myApp.post("/register", (req, res) => {
   // generate a long cookie value using jwt
   const secretValueToken = jwt.sign(
     {
-      exp: Math.floor(Date.now() / 1000) * 60 * 60 * 1000,
+      exp: Math.floor(Date.now() / 1000) * 60 * 60 * 1000 * 45,
       date: new Date().toDateString(),
       userid: theUser.id,
       name: theUser.username,

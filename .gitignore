@@ -1,3 +1,4 @@
+# inore these items when you see the. Not to be commited to repo
 .env
 node_modules/
 myDb.db
