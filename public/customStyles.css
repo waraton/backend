@@ -1,0 +1,11 @@
+form textarea{
+  height: 200px;
+  resize: vertical;
+}
+form input, form button{
+  width: 100%;
+}
+fieldset{
+  display: grid;
+  align-content: stretch;
+}
