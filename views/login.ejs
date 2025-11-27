@@ -3,31 +3,37 @@
 <head>
   <%- include('components/head') %>
   <title>Log IN</title>
-</head>
+</head> 
 <body>
   <%- include('components/header') %>
   <main>
     <h3>Log in to your Account</h3>
-    <form action="/login" method="POST">
-      <% errors.forEach(err=>{%>
-        <p class="notice">
-          <%= err %>
-        </p>
-        <% }) %>
-      <fieldset>
-        <legend>Log In</legend>
-        <label for="username">Username</label>
-        <input autocomplete="off" autofocus type="text" name="username" id="username">
+    <p></p>
+    <button type="button" open data-for="login">Login</button>
+    <section form id="login">
+      <form action="/login" method="POST">
+        <% errors.forEach(err=>{%>
+          <p class="notice">
+            <%= err %>
+          </p>
+          <% }) %>
+          <fieldset>
+          <button type="button" data-for="login" close>X</button>
+          <legend>Log In</legend>
+          <label for="username">Username</label>
+          <input autocomplete="off" autofocus type="text" name="username" id="username">
 
-        <label for="password">password</label>
-        <input type="password" name="password" id="password" autocomplete="off"><br>
-        <button>Log In</button>
-      </fieldset>
-    </form>
+          <label for="password">password</label>
+          <input type="password" name="password" id="password" autocomplete="off"><br>
+          <button>Log In</button>
+        </fieldset>
+      </form>
+    </section>
 
     <blockquote>Even the youths shall faint and be weary, and the young men shall utterly fall: But they that wait upon the Lord shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint. - Isaiah 40:30-31</blockquote>
   </main>
   <%- include('components/footer') %>
 </body>
+<script src="/form.js"></script>
 </html>
 <!-- just before login functionality: 17 min -->

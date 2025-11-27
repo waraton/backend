@@ -15,30 +15,35 @@
     <p>weSING you Happy Posting!!</p>
     <h4>Create an account</h4>
     <p>Create your account in a few simple steps to get started</p>
-    <form action="/register" method="POST">
+    <button type="button"
+    open data-for="create">Create account</button>
+    <section form id="create">
+      <form action="/register" method="POST">
 
-      <% errors.forEach(err=>{%>
-        <p class="notice">
-          <%= err %>
-        </p>
-        <% }) %>
+        <% errors.forEach(err=>{%>
+          <p class="notice">
+            <%= err %>
+          </p>
+          <% }) %>
 
-          <fieldset>
-            <legend>Create an account</legend>
-            <label for="username">Username</label>
-            <input autocomplete="off" type="text" name="username" id="username">
+            <fieldset>
+              <button close data-for="create" type="button">X</button>
+              <legend>Create an account</legend>
+              <label for="username">Username</label>
+              <input autocomplete="off" type="text" name="username" id="username">
 
-            <label for="password">password</label>
-            <input type="password" name="password" id="password" autocomplete="off"><br>
-            <button>Sign Up</button>
-            <p>Already having an account? Simply <a href="/login">Log In to your account</a></p>
-          </fieldset>
-    </form>
+              <label for="password">password</label>
+              <input type="password" name="password" id="password" autocomplete="off"><br>
+              <button>Sign Up</button>
+              <p>Already having an account? Simply <a href="/login">Log In to your account</a></p>
+            </fieldset>
+      </form>
+  </section>
 
     <blockquote>The heart of the wise makes his speech judicious and adds persuasiveness to his lips. - Proverbs 16:23</blockquote>
   </main>
   <%- include('components/footer') %>
 </body>
-
+<script src="/form.js"></script>
 </html>
 <!-- just before login functionality: 17 min -->
