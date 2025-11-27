@@ -269,7 +269,7 @@ myApp.post("/login", (req, res) => {
     // if true match and give cookie
     const secretValueToken = jwt.sign(
       {
-        exp: Math.floor(Date.now() / 1000) * 60 * 60 * 24,
+        exp: Math.floor(new Date() / 1000) + 60 * 60,
         date: new Date().toDateString(),
         userid: userInQuestion.id,
         name: userInQuestion.username,
@@ -280,7 +280,7 @@ myApp.post("/login", (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 1000 * 3600 * 45 * 1000,
+      maxAge: 1000 * 3600 * 24,
       /* a 1 day lifespan cookie accessible from server sent over https */
     });
     res.redirect("/");
@@ -336,7 +336,7 @@ myApp.post("/register", (req, res) => {
   // generate a long cookie value using jwt
   const secretValueToken = jwt.sign(
     {
-      exp: Math.floor(Date.now() / 1000) * 60 * 60 * 1000 * 45,
+      exp: Math.floor(new Date() / 1000) + 60 * 60,
       date: new Date().toDateString(),
       userid: theUser.id,
       name: theUser.username,
@@ -347,7 +347,7 @@ myApp.post("/register", (req, res) => {
     httpOnly: true,
     secure: false,
     sameSite: "strict",
-    maxAge: 1000 * 3600000,
+    maxAge: 1000 * 3600 * 24,
     /* a 1 day lifespan cookie accessible from server sent over https */
   });
   res.redirect("/");
