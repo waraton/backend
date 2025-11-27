@@ -9,3 +9,36 @@ fieldset{
   display: grid;
   align-content: stretch;
 }
+section[form] form{
+  width: 75vw;
+  max-width: 50rem;
+}
+section[form]{
+  position: fixed;
+  inset: 0;
+  place-content: center;
+  background: linear-gradient(#87ceeb86 0 0);
+  display: none;
+  margin: 0
+}
+[form] fieldset{
+  position: relative;
+  background-color: skyblue;
+}
+[close]{
+  width: 3rem;
+  aspect-ratio: 1;
+  border-radius: 55%;
+  margin-left: auto;
+}
+[form].active{
+  display: grid;
+}
+.fab{
+  aspect-ratio: 1 / 1;
+  background-color: skyblue;
+  width: 2rem;
+  display: inline-block;
+  border-radius: 2rem;
+  border: 1px solid;
+}
