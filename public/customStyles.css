@@ -34,11 +34,3 @@ section[form]{
 [form].active{
   display: grid;
 }
-.fab{
-  aspect-ratio: 1 / 1;
-  background-color: skyblue;
-  width: 2rem;
-  display: inline-block;
-  border-radius: 2rem;
-  border: 1px solid;
-}

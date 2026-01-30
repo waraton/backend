@@ -365,8 +365,6 @@ myApp.post("/convert", mustBeLoggedIn, (req, res) => {
   [`lch` , convert.hex.lch(color)]
   ]
   
-  console.log(colorObj)
-  
   res.render("color",{color, colorObj})
 })
 
