@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('components/head') %>
+  <title>Color Converter</title>
+</head>
+
+<body>
+  <%- include('components/header') %>
+  <main>
+    <hgroup>
+      <h3>Hello <%= user.name %>, welcome Color Converter</h3>
+    </hgroup>
+    
+    <h4>From HEX <%= color %> To</h4>
+
+    <ul>
+      <% colorObj.forEach(element => {%>
+        <li>
+          <%= element[0].toUpperCase() %>  <%= element[1] %>
+        </li>
+      <% }); %>
+    </ul>
+    
+    <h4>Color Converter</h4>
+    <form action="/convert" method="post">
+      <fieldset>
+        <legend>Convert Color from HEX</legend>
+        
+        <div>
+          <label for="color">Color:</label>
+          <input type="color" name="color" id="color" list value="cyan">
+          <button>Convert Color</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <blockquote>His body also was like the beryl, and his face as the appearance of lightning, and his eyes as lamps of fire, and his arms and his feet like in colour to polished brass, and the voice of his words like the voice of a multitude.. - Daniel 10:6</blockquote>
+  </main>
+  <%- include('components/footer') %>
+</body>
+
+</html>
+<!-- just before login functionality: 17 min -->

@@ -1,4 +1,5 @@
 require("dotenv").config();
+var convert = require('color-convert');
 //access the env file
 //html sanitizer
 const sanitizeHTML = require("sanitize-html");
@@ -352,6 +353,22 @@ myApp.post("/register", (req, res) => {
   });
   res.redirect("/");
 });
+// convert color
+myApp.post("/convert", mustBeLoggedIn, (req, res) => {
+  const color = req.body.color; 
+
+  const colorObj =  [
+  [`hsl` , convert.hex.hsl(color)],
+  [`rgb` , convert.hex.rgb(color)],
+  [`cmyk` , convert.hex.cmyk(color)],
+  [`lab` , convert.hex.lab(color)],
+  [`lch` , convert.hex.lch(color)]
+  ]
+  
+  console.log(colorObj)
+  
+  res.render("color",{color, colorObj})
+})
 
 /*
  * validation: 36 min
