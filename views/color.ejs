@@ -15,7 +15,7 @@
     
     <h4>From HEX <%= color %> To</h4>
 
-    <ul>
+    <ul style='border:thick solid <%= color %>;border-radius:.5rem'>
       <% colorObj.forEach(element => {%>
         <li>
           <%= element[0].toUpperCase() %>  <%= element[1] %>
