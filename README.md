@@ -15,3 +15,7 @@ Some features i would like t include are the following
 * Updating user credentials
 * Ensure all requests are handled and no error popping up any how like visiting non existent page
 * Deploying it on the web
+
+## Sources
+
+[LearnWebCode YouTube channel by Brad Schiff](https://youtu.be/1oTuMPIwHmk?si=QsOxxXaHicQjzbss 'Back-End Web Development (Tutorial for Beginners)'). Brad Schiff all so have other courses on his channel. Be sure to check out
